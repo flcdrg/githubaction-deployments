@@ -1,0 +1,40 @@
+name: Environment Deployments
+
+on:
+  workflow_dispatch:  # manual trigger
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+  dev_deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+      #url: ${{ steps.deploywebapp.outputs.webapp-url }}
+    steps:
+    - name: Download site package
+      run: echo "Blah"
+    
+  prod_deploy_canary:
+    needs: dev_deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      #url: ${{ steps.deploywebapp.outputs.webapp-url }}
+    steps:
+    - name: Echo url from deployment
+      run: echo "prod deploy canary"
+
+  prod_deploy:
+    needs: prod_deploy_canary
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+      #url: ${{ steps.slot_swap.outputs.url }}
+    steps:
+    - name: Echo url from previous stage
+      run: echo "prod"
